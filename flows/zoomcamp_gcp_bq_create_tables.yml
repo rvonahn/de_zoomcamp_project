@@ -1,0 +1,112 @@
+id: gcp_bq_create_tables
+namespace: zoomcamp
+
+tasks:
+  - id: bq_mpl_table_ext
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE EXTERNAL TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_ext`
+      (
+      uid BYTES,
+      info__generated_on TIMESTAMP,
+      info__slice STRING,
+      info__version STRING,
+      _dlt_load_id STRING,
+      _dlt_id STRING,
+      name STRING,
+      collaborative STRING,
+      pid BIGINT,
+      modified_at BIGINT,
+      num_tracks BIGINT,
+      num_albums BIGINT,
+      num_followers BIGINT,
+      num_edits BIGINT,
+      duration_ms BIGINT,
+      num_artists BIGINT,
+      _dlt_root_id STRING,
+      _dlt_parent_id STRING,
+      _dlt_list_idx BIGINT,
+      _dlt_id_1 STRING,
+      pos BIGINT,
+      artist_name STRING,
+      track_uri STRING,
+      artist_uri STRING,
+      track_name STRING,
+      album_uri STRING,
+      duration_ms_1 BIGINT,
+      album_name STRING,
+      _dlt_root_id_1 STRING,
+      _dlt_parent_id_1 STRING,
+      _dlt_list_idx_1 BIGINT,
+      _dlt_id_2 STRING 
+      )OPTIONS (
+        format = 'json',
+        ignore_unknown_values = TRUE
+      );
+
+  - id: bq_mpl_table
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp`
+      (
+      info__generated_on TIMESTAMP,
+      info__slice STRING,
+      info__version STRING,
+      _dlt_load_id STRING,
+      _dlt_id STRING,
+      name STRING,
+      collaborative STRING,
+      pid BIGINT,
+      modified_at BIGINT,
+      num_tracks BIGINT,
+      num_albums BIGINT,
+      num_followers BIGINT,
+      num_edits BIGINT,
+      duration_ms BIGINT,
+      num_artists BIGINT,
+      _dlt_root_id STRING,
+      _dlt_parent_id STRING,
+      _dlt_list_idx BIGINT,
+      _dlt_id_1 STRING,
+      pos BIGINT,
+      artist_name STRING,
+      track_uri STRING,
+      artist_uri STRING,
+      track_name STRING,
+      album_uri STRING,
+      duration_ms_1 BIGINT,
+      album_name STRING,
+      _dlt_root_id_1 STRING,
+      _dlt_parent_id_1 STRING,
+      _dlt_list_idx_1 BIGINT,
+      _dlt_id_2 STRING 
+      );
+
+  - id: bq_mpl_table_tmp
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_tmp`
+          AS
+          SELECT
+            MD5(CONCAT(
+              COALESCE(CAST(_dlt_load_id AS STRING), ""),
+              COALESCE(CAST(pid AS STRING), ""),
+              COALESCE(CAST(pos AS STRING), ""),
+              COALESCE(CAST(_dlt_id AS STRING), ""),
+              COALESCE(CAST(info__generated_on AS STRING), "")
+            )) AS unique_row_id,
+            "{{kv('GCP_DATASET')}}" AS filename,
+            *
+          FROM `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_ext`
+
+  - id: purge_files
+    type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+    disabled: true
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values: 
+      serviceAccount: "{{ kv('GCP_SERVICE_ACCOUNT') }}"
+      projectId: "{{ kv('GCP_PROJECT_ID') }}"
+      location: "{{ kv('GCP_LOCATION') }}"
+      bucket: "{{ kv('GCP_BUCKET_NAME') }}"

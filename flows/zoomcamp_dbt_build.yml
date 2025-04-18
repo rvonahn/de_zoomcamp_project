@@ -1,0 +1,38 @@
+id: dbt_build
+namespace: zoomcamp
+
+tasks:
+- id: dbt-build
+  type: io.kestra.plugin.dbt.cli.DbtCLI
+  env:
+    DBT_DATABASE: "de-zoomcamp-project-455418"
+    DBT_SCHEMA: spotifymillionpl
+  namespaceFiles:
+    enabled: true
+  containerImage: ghcr.io/kestra-io/dbt-bigquery:latest
+  taskRunner:
+    type: io.kestra.plugin.scripts.runner.docker.Docker
+  commands:
+    - dbt deps
+    - dbt build
+  storeManifest:
+    key: manifest.json
+    namespace: "{{ flow.namespace }}"
+  profiles: |
+    default:
+      outputs:
+        dev:
+          type: bigquery
+          dataset: spotifymillionpl # this refers to the target schema in google big query
+          project: de-zoomcamp-project-455418
+          location: US
+          keyfile: "de-zoomcamp-project-455418-892d64b128f9"
+          method: service-account
+          priority: interactive
+          threads: 16
+          timeout_seconds: 300
+          fixed_retries: 1
+      target: dev
+  disabled: false
+
+  

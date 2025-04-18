@@ -1,0 +1,7 @@
+id: cgcp_pull_bucket_json_make_parquet
+namespace: zoomcamp
+
+tasks:
+  - id: download_gcp_json
+    type: io.kestra.plugin.gcp.gcs.Download
+    from: "gs://{{ kv('GCP_BUCKET_NAME') }}/spotifympd/spotify_mpl{{ taskrun.iteration }}.json"

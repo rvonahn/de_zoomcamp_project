@@ -1,0 +1,8 @@
+id: gcs_upload
+namespace: zoomcamp
+
+tasks:
+  - id: upload_to_gcs
+    type: io.kestra.plugin.gcp.gcs.Upload
+    from: "{{render(vars.data)}}"
+    to: "{{render(vars.gcs_file)}}"

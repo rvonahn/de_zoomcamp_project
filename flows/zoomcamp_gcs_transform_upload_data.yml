@@ -1,0 +1,49 @@
+id: gcs_transform_upload_data
+namespace: zoomcamp
+
+variables:
+  file_id: "test.json"
+  expanded_path: ""
+  gcs_file: "gs://{{kv('GCP_BUCKET_NAME')}}/parquet/{{vars.file_id}}"
+  something: render{{ "Hello World!" | slugify }}
+  quick_name: spotify_mpl
+ 
+tasks:
+  - id: initial_load    
+    type: io.kestra.plugin.core.namespace.DownloadFiles    
+    namespace: zoomcamp
+    files:      
+      - spotify_million_playlist_testx.zip
+  - id: unzip
+    type: io.kestra.plugin.compress.ArchiveDecompress
+    algorithm: ZIP
+    from: "{{ outputs.initial_load.files['/spotify_million_playlist_testx.zip']}}"
+
+  - id: for_each
+    type: io.kestra.plugin.core.flow.ForEach
+    values: "{{ outputs.unzip.files | keys }}"
+    tasks:
+      - id: convert_json_to_parquet
+        type: io.kestra.plugin.jdbc.duckdb.Query
+        url: 'jdbc:duckdb:'
+        sql: |-
+          COPY (
+          SELECT UNNEST(playlists, recursive:= true)
+          FROM read_json(in.json)
+          TO '{{ outputFiles.out }}' (FORMAT parquet);)
+        inputFiles:
+          in.json: "{{ outputs.unzip.files[taskrun.value] }}"
+        outputFiles:
+          -out
+      - id: upload_to_gcs
+        type: io.kestra.plugin.gcp.gcs.Upload
+        from: "{{ outputFiles.uri }}"
+        to: "gs://{{ kv('GCP_BUCKET_NAME') }}/spotifympd/spotify_mpl{{ taskrun.iteration }}.parquet"
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values: 
+      serviceAccount: "{{ kv('GCP_SERVICE_ACCOUNT') }}"
+      projectId: "{{ kv('GCP_PROJECT_ID') }}"
+      location: "{{ kv('GCP_LOCATION') }}"
+      bucket: "{{ kv('GCP_BUCKET_NAME') }}"

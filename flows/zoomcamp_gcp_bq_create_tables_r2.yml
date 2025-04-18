@@ -1,0 +1,131 @@
+id: gcp_bq_create_tables_r2
+namespace: zoomcamp
+
+tasks:
+  - id: bq_mpl_table_ext
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE EXTERNAL TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_ext`
+      (
+      name STRING,
+      collaborative STRING,
+      pid INTEGER,
+      modified_at INTEGER,
+      num_tracks INTEGER,
+      num_albums INTEGER,
+      num_followers INTEGER,
+      tracks STRING,
+      list STRING,		
+      element STRING,
+      pos STRING,
+      artist_name STRING,
+      track_uri STRING,
+      artist_uri STRING,
+      track_name STRING,
+      album_uri STRING,
+      duration_ms INTEGER,
+      album_name STRING,
+      num_edits INTEGER,
+      )OPTIONS (
+        format = 'parquet',
+        uris = ['uris']
+      );
+
+  - id: bq_mpl_table
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp`
+      (
+      unique_row_id BYTES,
+      name STRING,
+      collaborative STRING,
+      pid INTEGER,
+      modified_at INTEGER,
+      num_tracks INTEGER,
+      num_albums INTEGER,
+      num_followers INTEGER,
+      tracks STRING,
+      list STRING,		
+      element STRING,
+      pos STRING,
+      artist_name STRING,
+      track_uri STRING,
+      artist_uri STRING,
+      track_name STRING,
+      album_uri STRING,
+      duration_ms INTEGER,
+      album_name STRING,
+      num_edits INTEGER,
+      );
+
+  - id: bq_mpl_table_tmp
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_tmp`
+          AS
+          SELECT
+            MD5(CONCAT(
+              COALESCE(CAST(pid AS STRING), ""),
+              COALESCE(CAST(pos AS STRING), "")
+            )) AS unique_row_id,
+            "{{kv('GCP_DATASET')}}" AS filename,
+            *
+          FROM `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_ext`
+
+  - id: ext_master_merge
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      MERGE INTO `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp` M
+          USING `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.mp_tmp` T
+          ON M.unique_row_id = T.unique_row_id
+          WHEN NOT MATCHED THEN
+            INSERT (name,
+            collaborative,
+            pid,
+            modified_at,
+            num_tracks,
+            num_albums,
+            num_followers,
+            tracks,
+            list,		
+            element,
+            pos,
+            artist_name,
+            track_uri,
+            artist_uri,
+            track_name,
+            album_uri,
+            duration_ms,
+            album_name,
+            num_edits)
+             VALUES (name,
+            collaborative,
+            pid,
+            modified_at,
+            num_tracks,
+            num_albums,
+            num_followers,
+            tracks,
+            list,		
+            element,
+            pos,
+            artist_name,
+            track_uri,
+            artist_uri,
+            track_name,
+            album_uri,
+            duration_ms,
+            album_name,
+            num_edits);
+
+  - id: purge_files
+    type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+    disabled: true
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values: 
+      serviceAccount: "{{ kv('GCP_SERVICE_ACCOUNT') }}"
+      projectId: "{{ kv('GCP_PROJECT_ID') }}"
+      location: "{{ kv('GCP_LOCATION') }}"
+      bucket: "{{ kv('GCP_BUCKET_NAME') }}"
