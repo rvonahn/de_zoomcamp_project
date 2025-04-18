@@ -17,10 +17,11 @@ It is downloaded as a 5gb Zip file which expands to approximately 37gb.  While t
 
 The pipeline is Batch and would be loaded as new sets become available.
 
-Technologies Used:
--Cloud:  GCP
--IaC:  Terraform
--Orchestration:  Kestra
--Data Warehouse:  BigQuery
--Batch Processing:  DBT
--Dashboard:  Looker Studio
+<ul>Technologies Used:
+<li>Cloud:  GCP</li>
+<li>IaC:  Terraform</li>
+<li>Orchestration:  Kestra</li>
+<li>Data Warehouse:  BigQuery</li>
+<li>Batch Processing:  DBT</li>
+<li>Dashboard:  Looker Studio</li>
+</ul>
