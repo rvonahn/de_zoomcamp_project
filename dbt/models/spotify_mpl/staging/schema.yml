@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_mp
+    database: de-zoomcamp-project-455418
+    schema: spotifymillionpl
+      # loaded_at_field: record_loaded_at
+    tables:
+      - name: mp
