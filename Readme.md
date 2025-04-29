@@ -25,3 +25,52 @@ The pipeline is Batch and would be loaded as new sets become available.
 <li>Batch Processing:  DBT</li>
 <li>Dashboard:  Looker Studio</li>
 </ul>
+
+<h2>Setup guide</h2>
+
+<h3>Prerequisites</h3>
+
+1a.  To run the project you will first need Terraform.
+Terraform client installation: https://www.terraform.io/downloads
+
+1b.  Next, you will need a cloud provider account, such as GCP.
+https://console.cloud.google.com/
+i.  Create a new project
+
+1c.  Get your credentials from GCP.
+i.  Create and download a service account (IAM & Admin>Service Accounts>Create Service Account)
+
+1d.  Move the service account JSON file as downloaded to the following path.
+i.  de_zoomcamp_project\terraform\keys
+
+1e.  In terraform/main.tf, change variables in main.tf and variables.tf to match your destination as needed
+i.  Run terraform init and apply
+
+2.  Download the datasource
+2a. Navigate to https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge 
+2b. Register
+2c. Join the challenge
+2d. Download the set from the "Resources" area.
+
+
+3.  Set up orchestration
+3a.  Open your Kestra instance (from a Docker Container or the Cloud)
+Information on running Kestra, including sourcing a docker-compose file can be found here
+
+3b.  If it doesn't exist already, create a namespace in Kestra labelled "zoomcamp"
+
+3c.  Move the datasource where needed.  If Kestra is not mapped to pick up the data source from a cloud bucket or local directory, you can add it to the "files" section of the namespace in Kestra to get the project running quickly.
+
+3d.  Add your credentials to the Kestra key, value store
+
+3e.  Run the following flows to extract and convert the file and initialize dbt:
+
+zoomcamp_gcp_kv_setup.yml
+zoomcamp_gcp_resource_setup.yml
+zoomcamp_gcp_bq_create_tables_r2.yml
+zoomcamp_gcs_upload.yml
+zoomcamp_gcs_transform_upload_data.yml
+zoomcamp_cgcp_pull_bucket_json_make_parquet.yml
+zoomcamp_dbt_build_r2.yml
+	
+4.  You can now connect datasource for dashboards in Looker Studio.
