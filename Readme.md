@@ -76,3 +76,5 @@ Information on running Kestra, including sourcing a docker-compose file can be f
 <ul>zoomcamp_dbt_build_r2.yml</ul>
 	
 4.  You can now connect datasource for dashboards in Looker Studio.
+Example two panels:
+<img src = https://github.com/rvonahn/de_zoomcamp_project/blob/main/de_zoomcamp_project_image.png>
