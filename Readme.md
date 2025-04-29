@@ -35,23 +35,25 @@ Terraform client installation: https://www.terraform.io/downloads
 
 1b.  Next, you will need a cloud provider account, such as GCP.
 https://console.cloud.google.com/
-i.  Create a new project
+<ul>i.  Create a new project</ul>
 
 1c.  Get your credentials from GCP.
-i.  Create and download a service account (IAM & Admin>Service Accounts>Create Service Account)
+<ul>i.  Create and download a service account (IAM & Admin>Service Accounts>Create Service Account)</ul>
 
 1d.  Move the service account JSON file as downloaded to the following path.
-i.  de_zoomcamp_project\terraform\keys
+<ul>i.  de_zoomcamp_project\terraform\keys</ul>
 
 1e.  In terraform/main.tf, change variables in main.tf and variables.tf to match your destination as needed
-i.  Run terraform init and apply
+<ul>i.  Run terraform init and apply</ul>
 
 <h3>Datasource</h3>
-2a. Navigate to https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge 
-2b. Register
-2c. Join the challenge
-2d. Download the set from the "Resources" area.
+2a. Navigate to https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge  
 
+2b. Register  
+
+2c. Join the challenge  
+
+2d. Download the set from the "Resources" area.  
 
 <h3>Orchestration</h3>
 3a.  Open your Kestra instance (from a Docker Container or the Cloud)
