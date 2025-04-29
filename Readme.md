@@ -30,8 +30,9 @@ The pipeline is Batch and would be loaded as new sets become available.
 
 <h3>Prerequisites</h3>
 
-1a.  To run the project you will first need Terraform.
-Terraform client installation: https://www.terraform.io/downloads
+<ol>
+<li></li>To run the project you will first need Terraform.<br>
+Terraform client installation: https://www.terraform.io/downloads</li>
 
 1b.  Next, you will need a cloud provider account, such as GCP.
 https://console.cloud.google.com/
@@ -46,14 +47,14 @@ i.  de_zoomcamp_project\terraform\keys
 1e.  In terraform/main.tf, change variables in main.tf and variables.tf to match your destination as needed
 i.  Run terraform init and apply
 
-2.  Download the datasource
+<h3>Datasource</h3>
 2a. Navigate to https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge 
 2b. Register
 2c. Join the challenge
 2d. Download the set from the "Resources" area.
 
 
-3.  Set up orchestration
+<h3>Orchestration</h3>
 3a.  Open your Kestra instance (from a Docker Container or the Cloud)
 Information on running Kestra, including sourcing a docker-compose file can be found here
 
@@ -65,12 +66,12 @@ Information on running Kestra, including sourcing a docker-compose file can be f
 
 3e.  Run the following flows to extract and convert the file and initialize dbt:
 
-zoomcamp_gcp_kv_setup.yml
-zoomcamp_gcp_resource_setup.yml
-zoomcamp_gcp_bq_create_tables_r2.yml
-zoomcamp_gcs_upload.yml
-zoomcamp_gcs_transform_upload_data.yml
-zoomcamp_cgcp_pull_bucket_json_make_parquet.yml
-zoomcamp_dbt_build_r2.yml
+<ul>zoomcamp_gcp_kv_setup.yml</ul>
+<ul>zoomcamp_gcp_resource_setup.yml</ul>
+<ul>zoomcamp_gcp_bq_create_tables_r2.yml</ul>
+<ul>zoomcamp_gcs_upload.yml</ul>
+<ul>zoomcamp_gcs_transform_upload_data.yml</ul>
+<ul>zoomcamp_cgcp_pull_bucket_json_make_parquet.yml</ul>
+<ul>zoomcamp_dbt_build_r2.yml</ul>
 	
 4.  You can now connect datasource for dashboards in Looker Studio.
