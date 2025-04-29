@@ -30,9 +30,8 @@ The pipeline is Batch and would be loaded as new sets become available.
 
 <h3>Prerequisites</h3>
 
-<ol>
-<li></li>To run the project you will first need Terraform.<br>
-Terraform client installation: https://www.terraform.io/downloads</li>
+1a. To run the project you will first need Terraform.
+Terraform client installation: https://www.terraform.io/downloads
 
 1b.  Next, you will need a cloud provider account, such as GCP.
 https://console.cloud.google.com/
